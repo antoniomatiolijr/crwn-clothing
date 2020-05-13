@@ -13,6 +13,23 @@ const config = {
   measurementId: "G-1VG57W35X3",
 };
 
+export const getUserCartRef = async (userId) => {
+  if (!userId) return;
+  const cartsRef = firestore.collection("carts").where("userId", "==", userId);
+  const cartSnapshot = await cartsRef.get();
+
+  if (cartSnapshot.empty) {
+    const cartDoc = firestore.collection("carts").doc();
+    await cartDoc.set({
+      userId,
+      cartItems: [],
+    });
+    return cartDoc;
+  } else {
+    return cartSnapshot.docs[0].ref;
+  }
+};
+
 export const createUserProfileDocument = async (userAuth, additionalData) => {
   if (!userAuth) return;
 
